@@ -1248,7 +1248,25 @@ static inline int z_impl_gpio_port_get_raw(const struct device *port,
 	const struct gpio_driver_api *api =
 		(const struct gpio_driver_api *)port->api;
 
-	return api->port_get_raw(port, value);
+	int ret = api->port_get_raw(port, value);
+	if (ret != 0) 
+	{
+		return ret;
+	}
+
+	int counter = 0;
+	gpio_port_value_t val_cp = *value;
+	while (val_cp != 0)
+	{
+		if ((val_cp & 0x1) == 1) {
+			sys_port_trace_gpio_pin_active(port, (gpio_pin_t)counter);
+		}
+
+		val_cp >>= 1;
+		counter++;
+	}
+
+	return ret;
 }
 
 /**

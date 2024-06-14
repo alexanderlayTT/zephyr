@@ -2,6 +2,7 @@
 #include <zephyr/sys/printk.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/drivers/gpio.h>
+#include <zephyr/drivers/gpio/gpio_emul.h>
 
 
 /* size of stack area used by each thread */
@@ -29,14 +30,20 @@ void gpio_sample(void)
     /* Configure pin 1 as input */
     gpio_pin_configure(dev, 1, GPIO_INPUT);
 
+    /* Read pin 1 */
+    gpio_emul_input_set(dev, 1, 1);
+    gpio_pin_get(dev, 1);
+    gpio_emul_input_set(dev, 1, 0);
+    gpio_pin_get(dev, 1);
+
     /* Setup pin 1 for interrupt */
-    gpio_pin_interrupt_configure(dev, 1, GPIO_INT_LEVEL_HIGH);
+    gpio_pin_interrupt_configure(dev, 1, GPIO_INT_EDGE_RISING);
     static struct gpio_callback gpio_cb;
-	gpio_init_callback(&gpio_cb, test_handler, 1);
+	gpio_init_callback(&gpio_cb, test_handler, BIT(1));
 	gpio_add_callback(dev, &gpio_cb);
 
     /* Trigger interrupt */
-	gpio_pin_set(dev, 0, 1);
+    gpio_emul_input_set(dev, 1, 1);
 
     /* Remove interrupt */
 	gpio_remove_callback(dev, &gpio_cb);
