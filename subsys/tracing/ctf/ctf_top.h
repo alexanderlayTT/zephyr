@@ -157,13 +157,34 @@ typedef enum {
 	CTF_EVENT_NET_SEND_DATA_EXIT = 0x5F,
 	CTF_EVENT_NET_RX_TIME = 0x60,
 	CTF_EVENT_NET_TX_TIME = 0x61,
-	CTF_EVENT_GPIO_ACTIVE = 0x62,
-	CTF_EVENT_GPIO_INACTIVE = 0x63,
-	CTF_EVENT_GPIO_CONFIGURED_INPUT = 0x64,
-	CTF_EVENT_GPIO_CONFIGURED_OUTPUT = 0x65,
-	CTF_EVENT_GPIO_EVENT_ATTACHED = 0x66,
-	CTF_EVENT_GPIO_EVENT_REMOVED = 0x67,
-	CTF_EVENT_GPIO_EVENT_EXECUTED = 0x68,
+	CTF_EVENT_GPIO_PIN_CONFIGURE_INTERRUPT_ENTER = 0x62,
+	CTF_EVENT_GPIO_PIN_CONFIGURE_INTERRUPT_EXIT = 0x63,
+	CTF_EVENT_GPIO_PIN_CONFIGURE_ENTER = 0x64,
+	CTF_EVENT_GPIO_PIN_CONFIGURE_EXIT = 0x65,
+	CTF_EVENT_GPIO_PORT_GET_DIRECTION_ENTER = 0x66,
+	CTF_EVENT_GPIO_PORT_GET_DIRECTION_EXIT = 0x67,
+	CTF_EVENT_GPIO_PIN_GET_CONFIG_ENTER = 0x68,
+	CTF_EVENT_GPIO_PIN_GET_CONFIG_EXIT = 0x69,
+	CTF_EVENT_GPIO_PORT_GET_RAW_ENTER = 0x6A,
+	CTF_EVENT_GPIO_PORT_GET_RAW_EXIT = 0x6B,
+	CTF_EVENT_GPIO_PORT_SET_MASKED_RAW_ENTER = 0x6C,
+	CTF_EVENT_GPIO_PORT_SET_MASKED_RAW_EXIT = 0x6D,
+	CTF_EVENT_GPIO_PORT_SET_BITS_RAW_ENTER = 0x6E,
+	CTF_EVENT_GPIO_PORT_SET_BITS_RAW_EXIT = 0x6F,
+	CTF_EVENT_GPIO_PORT_CLEAR_BITS_RAW_ENTER = 0x70,
+	CTF_EVENT_GPIO_PORT_CLEAR_BITS_RAW_EXIT = 0x71,
+	CTF_EVENT_GPIO_PORT_TOGGLE_BITS_ENTER = 0x72,
+	CTF_EVENT_GPIO_PORT_TOGGLE_BITS_EXIT = 0x73,
+	CTF_EVENT_GPIO_INIT_CALLBACK_ENTER = 0x74,
+	CTF_EVENT_GPIO_INIT_CALLBACK_EXIT = 0x75,
+	CTF_EVENT_GPIO_ADD_CALLBACK_ENTER = 0x76,
+	CTF_EVENT_GPIO_ADD_CALLBACK_EXIT = 0x77,
+	CTF_EVENT_GPIO_REMOVE_CALLBACK_ENTER = 0x78,
+	CTF_EVENT_GPIO_REMOVE_CALLBACK_EXIT = 0x79,
+	CTF_EVENT_GPIO_GET_PENDING_INT_ENTER = 0x7A,
+	CTF_EVENT_GPIO_GET_PENDING_INT_EXIT = 0x7B,
+	CTF_EVENT_GPIO_FIRE_CALLBACKs_ENTER = 0x7C,
+	CTF_EVENT_GPIO_FIRE_CALLBACK = 0x7D,
 } ctf_event_t;
 
 typedef struct {
@@ -663,39 +684,182 @@ static inline void ctf_top_net_tx_time(int32_t if_index, uint32_t iface, uint32_
 		  if_index, iface, pkt, priority, tc, duration);
 }
 
-static inline void ctf_top_gpio_pin_active(uint32_t port, uint32_t pin)
+/* GPIO */
+static inline void ctf_top_gpio_pin_interrupt_configure_enter(uint32_t port, uint32_t pin,
+							uint32_t flags)
 {
-	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_ACTIVE), port, pin);
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PIN_CONFIGURE_INTERRUPT_ENTER),
+		  port, pin, flags);
 }
 
-static inline void ctf_top_gpio_pin_inactive(uint32_t port, uint32_t pin)
+static inline void ctf_top_gpio_pin_interrupt_configure_exit(uint32_t port, uint32_t pin,
+						       int32_t ret)
 {
-	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_INACTIVE), port, pin);
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PIN_CONFIGURE_INTERRUPT_EXIT),
+		  port, pin, ret);
 }
 
-static inline void ctf_top_gpio_pin_configured_input(uint32_t port, uint32_t pin, uint32_t flags)
+static inline void ctf_top_gpio_pin_configure_enter(uint32_t port, uint32_t pin,
+						    uint32_t flags)
 {
-	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_CONFIGURED_INPUT), port, pin, flags);
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PIN_CONFIGURE_ENTER),
+		  port, pin, flags);
 }
 
-static inline void ctf_top_gpio_pin_configured_output(uint32_t port, uint32_t pin, uint32_t flags)
+static inline void ctf_top_gpio_pin_configure_exit(uint32_t port, uint32_t pin,
+						   int32_t ret)
 {
-	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_CONFIGURED_OUTPUT), port, pin, flags);
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PIN_CONFIGURE_EXIT),
+		  port, pin, ret);
 }
 
-static inline void ctf_top_gpio_pin_event_attached(uint32_t port, uint32_t callback)
+static inline void ctf_top_gpio_port_get_direction_enter(uint32_t port, uint32_t map,
+							uint32_t inputs, uint32_t outputs)
 {
-	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_EVENT_ATTACHED), port, callback);
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PORT_GET_DIRECTION_ENTER),
+		  port, map, inputs, outputs);
 }
 
-static inline void ctf_top_gpio_pin_event_removed(uint32_t port, uint32_t callback)
+static inline void ctf_top_gpio_port_get_direction_exit(uint32_t port, int32_t ret)
 {
-	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_EVENT_REMOVED), port, callback);
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PORT_GET_DIRECTION_EXIT),
+		  port, ret);
 }
 
-static inline void ctf_top_gpio_pin_event_executed(uint32_t port, uint32_t callback)
+static inline void ctf_top_gpio_pin_get_config_enter(uint32_t port, uint32_t pin)
 {
-	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_EVENT_EXECUTED), port, callback);
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PIN_GET_CONFIG_ENTER),
+		  port, pin);
+}
+
+static inline void ctf_top_gpio_pin_get_config_exit(uint32_t port, uint32_t pin,
+						    int32_t ret)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PIN_GET_CONFIG_EXIT),
+		  port, pin, ret);
+}
+
+static inline void ctf_top_gpio_port_get_raw_enter(uint32_t port, uint32_t value)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PORT_GET_RAW_ENTER),
+		  port, value);
+}
+
+static inline void ctf_top_gpio_port_get_raw_exit(uint32_t port, int32_t ret)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PORT_GET_RAW_EXIT),
+		  port, ret);
+}
+
+static inline void ctf_top_gpio_port_set_masked_raw_enter(uint32_t port, uint32_t mask,
+							  uint32_t value)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PORT_SET_MASKED_RAW_ENTER),
+		  port, mask, value);
+}
+
+static inline void ctf_top_gpio_port_set_masked_raw_exit(uint32_t port, int32_t ret)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PORT_SET_MASKED_RAW_EXIT),
+		  port, ret);
+}
+
+static inline void ctf_top_gpio_port_set_bits_raw_enter(uint32_t port, uint32_t pins)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PORT_SET_BITS_RAW_ENTER),
+		  port, pins);
+}
+
+static inline void ctf_top_gpio_port_set_bits_raw_exit(uint32_t port, int32_t ret)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PORT_SET_BITS_RAW_EXIT),
+		  port, ret);
+}
+
+static inline void ctf_top_gpio_port_clear_bits_raw_enter(uint32_t port, uint32_t pins)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PORT_CLEAR_BITS_RAW_ENTER),
+		  port, pins);
+}
+
+static inline void ctf_top_gpio_port_clear_bits_raw_exit(uint32_t port, int32_t ret)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PORT_CLEAR_BITS_RAW_EXIT),
+		  port, ret);
+}
+
+static inline void ctf_top_gpio_port_toggle_bits_enter(uint32_t port, uint32_t pins)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PORT_TOGGLE_BITS_ENTER),
+		  port, pins);
+}
+
+static inline void ctf_top_gpio_port_toggle_bits_exit(uint32_t port, int32_t ret)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_PORT_TOGGLE_BITS_EXIT),
+		  port, ret);
+}
+
+static inline void ctf_top_gpio_init_callback_enter(uint32_t callback, uint32_t handler,
+							uint32_t pin_mask)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_INIT_CALLBACK_ENTER),
+		  callback, handler, pin_mask);
+}
+
+static inline void ctf_top_gpio_init_callback_exit(uint32_t callback)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_INIT_CALLBACK_EXIT),
+		  callback);
+}
+
+static inline void ctf_top_gpio_add_callback_enter(uint32_t port, uint32_t callback)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_ADD_CALLBACK_ENTER),
+		  port, callback);
+}
+
+static inline void ctf_top_gpio_add_callback_exit(uint32_t port, int32_t ret)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_ADD_CALLBACK_EXIT),
+		  port, ret);
+}
+
+static inline void ctf_top_gpio_remove_callback_enter(uint32_t port, uint32_t callback)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_REMOVE_CALLBACK_ENTER),
+		  port, callback);
+}
+
+static inline void ctf_top_gpio_remove_callback_exit(uint32_t port, int32_t ret)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_REMOVE_CALLBACK_EXIT),
+		  port, ret);
+}
+
+static inline void ctf_top_gpio_get_pending_int_enter(uint32_t dev)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_GET_PENDING_INT_ENTER),
+		  dev);
+}
+
+static inline void ctf_top_gpio_get_pending_int_exit(uint32_t dev, int32_t ret)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_GET_PENDING_INT_EXIT),
+		  dev, ret);
+}
+
+static inline void ctf_top_gpio_fire_callbacks_enter(uint32_t list, uint32_t port, 
+							uint32_t pins)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_FIRE_CALLBACKs_ENTER),
+		  list, port, pins);
+}
+
+static inline void ctf_top_gpio_fire_callback(uint32_t port, uint32_t cb)
+{
+	CTF_EVENT(CTF_LITERAL(uint8_t, CTF_EVENT_GPIO_FIRE_CALLBACK),
+		  port, cb);
 }
 
 #endif /* SUBSYS_DEBUG_TRACING_CTF_TOP_H */
